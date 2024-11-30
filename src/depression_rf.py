@@ -5,10 +5,15 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 import pandas as pd
 import optuna
+import imblearn
 
 # Reload the data
 file_path = 'data/depression/depression_data.csv'
 data = pd.read_csv(file_path)
+
+# data.drop('Name', axis=1, inplace=True)
+
+data['History of Mental Illness'].value_counts(normalize=True) # unbalanced dataset so will employ SMOTE
 
 # Encode categorical variables using LabelEncoder
 label_encoders = {}
@@ -33,19 +38,24 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
+# Apply SMOTE to balance the training data
+smote = imblearn.over_sampling.SMOTE(random_state=42)
+X_train, y_train = smote.fit_resample(X_train, y_train)
+
+# check the class distribution after applying SMOTE
+print("Class Distribution after SMOTE:")
+print(y_train.value_counts(normalize=True))
+
 # Train a Random Forest Classifier
-model = RandomForestClassifier(random_state=42)
-model.fit(X_train, y_train)
-
-# Make predictions
-y_pred = model.predict_proba(X_test)
-
-# Evaluate the model using ROC AUC score
-roc_auc = roc_auc_score(y_test, y_pred[:, 1])
-
-# Display the classification report and confusion matrix
-print(f"ROC AUC Score: {roc_auc}")
-
+# model = RandomForestClassifier(random_state=42)
+# model.fit(X_train, y_train)
+#
+# # Make predictions
+# y_pred = model.predict_proba(X_test)
+#
+# # Evaluate the model using ROC AUC score
+# roc_auc = roc_auc_score(y_test, y_pred[:, 1])
+# print(f"ROC AUC Score: {roc_auc}") # 0.56
 
 # implement Bayesian optimization for hyperparameter tuning
 
@@ -100,4 +110,27 @@ y_pred_best = best_model.predict_proba(X_test)
 roc_auc_best = roc_auc_score(y_test, y_pred_best[:, 1])
 
 print(f"ROC AUC Score (Best Model): {roc_auc_best}")
+
+'''
+Best ROC AUC Score: 0.6028017945076724
+Optimized Hyperparameters: {'n_estimators': 996, 'max_depth': 4, 'min_samples_split': 16, 'min_samples_leaf': 4}
+ROC AUC Score (Best Model): 0.5980090075131111
+'''
+
+# get the feature importances
+feature_importances = best_model.feature_importances_
+
+# Create a DataFrame to display feature importances
+feature_importance_df = pd.DataFrame({
+    'Feature': X.columns,
+    'Importance': feature_importances
+})
+
+# Sort the features by importance
+feature_importance_df = feature_importance_df.sort_values('Importance', ascending=False)
+
+# Display the feature importances
+print("Feature Importances:")
+print(feature_importance_df)
+
 
