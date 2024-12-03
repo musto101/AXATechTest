@@ -22,7 +22,8 @@ def plot_categorical_distribution(column, title):
     plt.title(title)
     plt.xlabel(column)
     plt.ylabel('Frequency')
-    plt.show()
+    # save the plot
+    plt.savefig('data/figures/' + column + '.png')
 
 # Function to plot numerical data distributions
 def plot_numerical_distribution(column, title):
@@ -30,7 +31,8 @@ def plot_numerical_distribution(column, title):
     plt.title(title)
     plt.xlabel(column)
     plt.ylabel('Frequency')
-    plt.show()
+    # save the plot
+    plt.savefig('data/figures/' + column + '.png')
 
 # Plot distributions of some key categorical columns
 plot_categorical_distribution('Marital Status', 'Distribution of Marital Status')
@@ -46,11 +48,11 @@ family_history_vs_mental_illness = data.groupby('Family History of Depression')[
 family_history_vs_mental_illness.plot(kind='bar', stacked=True, figsize=(10, 6))
 plt.title('Mental Illness Based on Family History of Depression')
 plt.ylabel('Proportion')
-plt.show()
+plt.savefig('data/figures/family_history_vs_mental_illness.png')
 
 # Analyzing the relationship between alcohol consumption and mental illness
 alcohol_vs_mental_illness = data.groupby('Alcohol Consumption')['History of Mental Illness'].value_counts(normalize=True).unstack()
 alcohol_vs_mental_illness.plot(kind='bar', stacked=True, figsize=(10, 6))
 plt.title('Mental Illness Based on Alcohol Consumption')
 plt.ylabel('Proportion')
-plt.show()
+plt.savefig('data/figures/alcohol_vs_mental_illness.png')
