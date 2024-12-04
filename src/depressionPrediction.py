@@ -8,7 +8,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
-from src.depression_EDA import file_path
 
 
 class DepressionTask:
